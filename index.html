@@ -46,7 +46,7 @@ const stores=[
 const therapists=['安然','若溪','可心','思妍','梦琪','雅宁','心悦','嘉怡'];
 const heroes=[['BEAUTY BEGINS WITH CARE','把时间留给<br>更好的自己','尊美生活，守护你的美丽时刻'],['A LITTLE CARE, EVERY DAY','今天也要<br>好好照顾自己','从一次轻松的护理开始'],['YOUR MOMENT OF CALM','在城市一隅<br>找到片刻松弛','两家门店，期待与你相遇']];
 const key='zunmei-prototype-v5';
-const baseCoupons=[{id:'CP20261001',amount:50,title:'项目优惠券',rule:'满 ¥298 可用',expires:'有效期至 2026-10-31',status:'待使用',source:'会员专享礼'},{id:'CP20261002',amount:30,title:'新人复购礼',rule:'满 ¥198 可用',expires:'有效期至 2026-11-15',status:'待使用',source:'复购权益'}];
+const baseCoupons=[];
 const newcomerCoupon={id:'NEWUSER10',amount:10,title:'新人注册礼',rule:'无门槛优惠券',expires:'',status:'待使用',source:'首次注册小程序自动赠送'};
 const defaults={loggedIn:false,newUserCouponGranted:false,appointments:[{id:'AP20261016001',project:'到店护理预约',store:'金水万达店',therapist:'安然',date:'2026-10-16',time:'14:30',status:'待到店'}],orders:[{id:'OR20261008001',name:'Janssen补水',price:420,date:'2026-10-08 10:36',status:'已支付'}],referrals:[{type:'project',name:'陈女士',phone:'137****9026',date:'2026-10-17 16:05',purchaseDate:'2026-10-17 11:32',store:'熙地港店',order:'OR202610170021',item:'Janssen补水',paid:420,rate:0.05,status:'已核销',points:21},{type:'card',name:'李女士',phone:'138****5268',date:'2026-10-14 15:26',store:'金水万达店',order:'TY202610140026',item:'轻会员体验卡',paid:980,points:50},{type:'card',name:'王女士',phone:'186****3105',date:'2026-10-11 10:48',store:'熙地港店',order:'TY202610110018',item:'轻会员体验卡',paid:980,points:50},{type:'card',name:'赵女士',phone:'159****8073',date:'2026-10-08 18:05',store:'金水万达店',order:'TY202610080039',item:'轻会员体验卡',paid:980,points:50}],consumePoints:1286,coupons:baseCoupons.map(c=>({...c}))};
 let state;try{state={...defaults,...JSON.parse(localStorage.getItem(key)||'{}')}}catch(e){state={...defaults}};
@@ -62,7 +62,7 @@ function save(){localStorage.setItem(key,JSON.stringify(state))}
 function migrateReferralRules(){state.referrals=(Array.isArray(state.referrals)?state.referrals:[]).map(r=>({...r,type:r.type||'card',item:r.item||'轻会员体验卡',paid:r.paid??980}));const example=defaults.referrals.find(r=>r.type==='project');if(example&&!state.referrals.some(r=>r.order===example.order))state.referrals.unshift({...example});save()}
 migrateReferralRules();
 function grantNewUserCoupon(){if(!Array.isArray(state.coupons))state.coupons=baseCoupons.map(c=>({...c}));if(state.coupons.some(c=>c.id===newcomerCoupon.id)){state.newUserCouponGranted=true;save();return false}state.coupons.unshift({...newcomerCoupon});state.newUserCouponGranted=true;save();return true}
-function migrateCoupons(){if(!Array.isArray(state.coupons))state.coupons=baseCoupons.map(c=>({...c}));if(state.loggedIn&&!state.newUserCouponGranted)grantNewUserCoupon();save()}
+function migrateCoupons(){state.coupons=Array.isArray(state.coupons)?state.coupons.filter(c=>c.id===newcomerCoupon.id):[];if(state.loggedIn&&!state.newUserCouponGranted)grantNewUserCoupon();save()}
 migrateCoupons();
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove('show'),2300)}
 function scrollToId(id){document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'})}
