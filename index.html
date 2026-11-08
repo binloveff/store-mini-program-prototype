@@ -37,6 +37,7 @@ body{background:#e7ded5}.app,.page.show,.sheet{background:var(--cream)}.iconbtn,
 .detailHero.avatarHero{height:210px;display:flex;align-items:center;justify-content:center;padding:18px;background:linear-gradient(115deg,#f8f6f0,#fff 58%,#eef1f2);border-color:#dfe4e5;font-size:inherit}.detailAvatarImage{display:block;width:78%;height:82%;object-fit:contain}
 .projectView{display:none}.app.projectsMode .homeView{display:none!important}.app.projectsMode .projectView{display:block}.app.projectsMode{min-height:100vh}.app.projectsMode .top{border-bottom:1px solid #eadfd5;margin-bottom:8px}.app.projectsMode #projects{padding-top:14px}
 </style>
+<style>.envSlide{overflow:hidden;background:#d8c1aa}.envSlide img{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover}.envSlide:first-child img{object-position:center 56%}.envSlide:after{content:"";position:absolute;inset:auto 0 0;height:46%;background:linear-gradient(transparent,rgba(45,31,20,.46));pointer-events:none}.envCaption{position:absolute;z-index:1;left:16px;bottom:15px;color:#fff;text-shadow:0 2px 8px rgba(30,20,12,.48)}.envCaption b,.envCaption span{display:block}.envCaption b{font-size:14px;letter-spacing:.5px}.envCaption span{margin-top:4px;font-size:9px;opacity:.9}</style>
 </head>
 <body>
 <main class="app">
@@ -46,7 +47,7 @@ body{background:#e7ded5}.app,.page.show,.sheet{background:var(--cream)}.iconbtn,
   <section class="section homeView" aria-label="精选礼遇轮播"><div class="memberCampaignHead"><h2 class="memberCampaignTitle"><i>///</i>精选礼遇<i>///</i></h2><small>FEATURED MOMENTS</small></div><div class="memberCampaign" id="memberCampaign"><div class="memberPromoTrack" id="memberPromoTrack"></div><div class="memberPromoDots" id="memberPromoDots"></div></div></section>
   <section class="section projectView" id="projects"><div class="sectionHead"><h2>热销护理</h2><span id="resultCount"></span></div><div class="search"><span>⌕</span><label class="srOnly" for="searchInput">搜索项目</label><input id="searchInput" placeholder="搜索项目或护理大类"><button onclick="renderProjects()">搜索</button></div><div class="tools"><span id="filterSummary"></span><label>排序 <select id="sortSelect"><option value="priceUp" selected>价格从低到高</option><option value="priceDown">价格从高到低</option><option value="time">时长从短到长</option><option value="default">价格表顺序</option></select></label></div><div class="projectList" id="projectList"></div></section>
   <div class="sectionSlogan homeView">每一份松弛，都从照顾自己开始</div>
-  <section class="section homeView" id="environment"><div class="sectionHead"><h2>门店环境</h2><span>待替换门店实拍照片</span></div><div class="env"><div class="envTrack" id="envTrack"></div><button class="arrow prev" onclick="changeEnv(-1)" aria-label="上一张">‹</button><button class="arrow next" onclick="changeEnv(1)" aria-label="下一张">›</button><div class="envDots" id="envDots"></div></div><p class="hint">这里不会使用虚构照片；上传两家门店实拍图后即可替换。</p></section>
+  <section class="section homeView" id="environment"><div class="sectionHead"><h2>门店环境</h2><span>真实空间 · 舒适体验</span></div><div class="env"><div class="envTrack" id="envTrack"></div><button class="arrow prev" onclick="changeEnv(-1)" aria-label="上一张">‹</button><button class="arrow next" onclick="changeEnv(1)" aria-label="下一张">›</button><div class="envDots" id="envDots"></div></div><p class="hint">尊美雅慧门店环境实拍</p></section>
   <nav class="tabbar" aria-label="底部导航"><button class="tab active" data-tab="home"><i>⌂</i>首页</button><button class="tab" data-tab="projects"><i>▦</i>项目</button><div class="brandOrb" aria-label="尊美雅慧品牌标识"><img id="navBrandLogo" alt="尊美雅慧品牌标识"></div><button class="tab" data-tab="stores"><i>⌖</i>门店</button><button class="tab" data-tab="member"><i>◉</i>我的</button></nav>
 </main>
 
@@ -211,9 +212,14 @@ showReferral=function(){showMemberView('points')};
 function showReferralRecord(){showMemberView('points')}
 function logout(){state.loggedIn=false;save();closeModal('memberModal');renderLoginState();toast('已退出原型预览')}
 
-const envNames=['金水万达店 · 前台接待区','护理房间','熙地港店 · 会员休息区'];
-function renderEnv(){envTrack.innerHTML=envNames.map(n=>`<div class="envSlide"><div class="envPlaceholder"><b>${n}</b><span>待上传真实门店照片</span></div></div>`).join('');envTrack.style.transform=`translateX(-${envIndex*100}%)`;envDots.innerHTML=envNames.map((_,i)=>`<button class="${i===envIndex?'active':''}" onclick="envIndex=${i};renderEnv()" aria-label="第${i+1}张"></button>`).join('')}
-function changeEnv(step){envIndex=(envIndex+step+envNames.length)%envNames.length;renderEnv()}
+const environments=[
+  {image:'assets/store-environment-01.jpg',title:'静谧休憩区',alt:'尊美雅慧门店静谧休憩区实拍'},
+  {image:'assets/store-environment-02.jpg',title:'门店接待空间',alt:'尊美雅慧门店接待空间实拍'},
+  {image:'assets/store-environment-03.jpg',title:'雅致护理空间',alt:'尊美雅慧门店护理空间实拍'},
+  {image:'assets/store-environment-04.jpg',title:'双人护理房',alt:'尊美雅慧门店双人护理房实拍'}
+];
+function renderEnv(){envTrack.innerHTML=environments.map(item=>`<div class="envSlide"><img src="${item.image}" alt="${item.alt}" loading="lazy"><div class="envCaption"><b>${item.title}</b><span>尊美雅慧 · 门店实拍</span></div></div>`).join('');envTrack.style.transform=`translateX(-${envIndex*100}%)`;envDots.innerHTML=environments.map((_,i)=>`<button class="${i===envIndex?'active':''}" onclick="envIndex=${i};renderEnv()" aria-label="第${i+1}张"></button>`).join('')}
+function changeEnv(step){envIndex=(envIndex+step+environments.length)%environments.length;renderEnv()}
 function switchMainView(view){const projectMode=view==='projects';document.querySelector('.app').classList.toggle('projectsMode',projectMode);document.querySelectorAll('.tab[data-tab]').forEach(button=>button.classList.toggle('active',button.dataset.tab===view));window.scrollTo({top:0,behavior:'smooth'})}
 function openProjectTab(){switchMainView('projects')}
 document.querySelectorAll('.tab[data-tab]').forEach(b=>b.onclick=()=>{const t=b.dataset.tab;if(t==='home')switchMainView('home');if(t==='projects')switchMainView('projects');if(t==='stores')openModal('storesModal');if(t==='member')openMember()});
